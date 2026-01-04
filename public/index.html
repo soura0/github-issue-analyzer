@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Issue Analyzer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body { padding-top: 50px; }
+        .container { max-width: 800px; }
+        #result-box { white-space: pre-wrap; background: #f4f4f4; padding: 1em; border-radius: 8px; color: #333; }
+        .loading { aria-busy: true; }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>GitHub Issue Analyzer</h1>
+        <p>Scan a repository to cache issues locally, then use AI to analyze them.</p>
+
+        <article>
+            <header><strong>1. Scan Repository</strong></header>
+            <form id="scan-form">
+                <div class="grid">
+                    <input type="text" id="scan-repo" name="repo" placeholder="owner/repo (e.g., facebook/react)" required>
+                    <button type="submit" id="scan-btn">Scan & Cache</button>
+                </div>
+            </form>
+            <div id="scan-status"></div>
+        </article>
+
+        <article>
+            <header><strong>2. AI Analysis</strong></header>
+            <form id="analyze-form">
+                <input type="text" id="analyze-repo" name="repo" placeholder="owner/repo" required>
+                <textarea id="prompt" name="prompt" placeholder="Ask the AI something about these issues..." required></textarea>
+                <button type="submit" id="analyze-btn" class="secondary">Run AI Analysis</button>
+            </form>
+            <div id="analysis-output" style="display:none;">
+                <h5>Result:</h5>
+                <div id="result-box"></div>
+            </div>
+        </article>
+    </main>
+
+    <script>
+        const API_BASE = "http://localhost:3000";
+
+        // Handle Scanning
+        document.getElementById('scan-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('scan-btn');
+            const status = document.getElementById('scan-status');
+            const repo = document.getElementById('scan-repo').value;
+
+            btn.setAttribute('aria-busy', 'true');
+            status.innerText = "Scanning... this might take a moment.";
+
+            try {
+                const res = await fetch(`${API_BASE}/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ repo })
+                });
+                const data = await res.json();
+                status.innerText = data.error ? `Error: ${data.error}` : `Success! Fetched ${data.issues_fetched} issues.`;
+            } catch (err) {
+                status.innerText = "Failed to connect to server.";
+            } finally {
+                btn.setAttribute('aria-busy', 'false');
+            }
+        };
+
+        // Handle Analysis
+        document.getElementById('analyze-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('analyze-btn');
+            const output = document.getElementById('analysis-output');
+            const box = document.getElementById('result-box');
+            
+            const repo = document.getElementById('analyze-repo').value;
+            const prompt = document.getElementById('prompt').value;
+
+            btn.setAttribute('aria-busy', 'true');
+            output.style.display = 'block';
+            box.innerText = "Analyzing...";
+
+            try {
+                const res = await fetch(`${API_BASE}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ repo, prompt })
+                });
+                const data = await res.json();
+                box.innerText = data.analysis || data.error;
+            } catch (err) {
+                box.innerText = "Error contacting AI service.";
+            } finally {
+                btn.setAttribute('aria-busy', 'false');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -5,7 +5,9 @@ A backend service that fetches GitHub **open issues**, caches them locally using
 [![SQLite](https://img.shields.io/badge/Storage-SQLite-green)](https://bun.sh/docs/api/sqlite) [![Bun](https://img.shields.io/badge/Runtime-Bun-blue)](https://bun.sh/)
 
 **Incremental Scanning** Incremental rescans fetch only new issues, rate-limit safe, deep history.
+
 **Validation** Type-safe inputs, 400 errors for bad JSON.
+
 **Usage flow** (visit → scan → analyze)
 
 ## Quickstart

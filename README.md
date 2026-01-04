@@ -17,14 +17,14 @@ A backend service that fetches GitHub **open issues**, caches them locally using
   - _LM Studio_: Load model → Start server on `localhost:1234`
   - _Ollama_: `ollama serve` on `localhost:11434`
 
-### 2.Install Bun
+### 2. Install Bun
 
 curl -fsSL https://bun.sh/install | bash
 
 ### 3. Clone & Install
 
-```bash
-git clone <your-repo>
+```
+git clone https://github.com/soura0/github-issue-analyzer
 cd github-issue-analyzer
 bun install
 ```
@@ -39,7 +39,7 @@ bun install
 
 #### Option B: Ollama
 
-bash
+
 
 ```
 curl -fsSL https://ollama.com/install.sh | sh
@@ -51,13 +51,15 @@ ollama serve  # Runs on :11434
 
 1. **Copy template**:
 
-```bash
+```
 cp .env.example .env
 ```
 
 ### 6. Run
 
+```
 bun run dev
+```
 
 ## Frontend (Optional)
 
